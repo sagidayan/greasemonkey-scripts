@@ -9,7 +9,7 @@
 
 // Constants
 const LOG_TAG = '[BZ-LINKER]';
-const summaryRegExp = new RegExp(/>\[([0-9]+)\]/);
+const summaryRegExp = new RegExp(/\[([0-9]+)\]/);
 
 // Entry point - observe DOM changes - and search for unlinked jira tickets
 var observer = new MutationObserver(update);
@@ -49,7 +49,8 @@ function filterAndInflate(rows) {
         if (r.tagName === 'TR' && !r.touched) {
             const summary = [...r.children].reduce((prev, child) => {
                 if (prev) return prev;
-                if (child.getAttribute('data-field-id') === 'summary' || child.className === 'summary') {
+                if (child.getAttribute('data-field-id') === 'summary' 
+                    || child.className.indexOf('summary') != -1) {
                     r.summaryElm = child;
                     return child.innerHTML;
                 }
