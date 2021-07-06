@@ -1,8 +1,8 @@
-
 // ==UserScript==
 // @name        RedHat jira BZ Linker
 // @version     0.0.1
 // @namespace   http://arantius.com/misc/greasemonkey/
+// @author      Sagi Dayan
 // @description Adds BZ links in (RedHat) Jira when needed
 // @match       https://issues.redhat.com/*
 // ==/UserScript==
@@ -18,8 +18,8 @@ observer.observe(document.body, { childList: true, characterData: true, subtree:
 // adds a tag prefix to logs for easy filters
 function log(...args) {
     const msg = args.reduce((msg, data) => {
-        return `${msg} ${data}`
-    }, LOG_TAG)
+        return `${msg} ${data}`;
+    }, LOG_TAG);
     console.log(msg);
 }
 
@@ -28,7 +28,7 @@ function update() {
     const issues = filterAndInflate([...document.getElementsByClassName("issuerow")]);
     if (issues.length) log(`Found #${issues.length} new unlinked issues. Linking...`);
     issues.forEach(issue => {
-        const issueId = issue.bzId
+        const issueId = issue.bzId;
         if (issueId) {
             const link = document.createElement('a');
             const p = document.createElement('p');
@@ -49,7 +49,7 @@ function filterAndInflate(rows) {
         if (r.tagName === 'TR' && !r.touched) {
             const summary = [...r.children].reduce((prev, child) => {
                 if (prev) return prev;
-                if (child.getAttribute('data-field-id') === 'summary' 
+                if (child.getAttribute('data-field-id') === 'summary'
                     || child.className.indexOf('summary') != -1) {
                     r.summaryElm = child;
                     return child.innerHTML;
