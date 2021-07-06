@@ -39,8 +39,10 @@ async function getPRs() {
 
 setInterval(() => {
     const urlSplit = document.URL.split('/');
-    if (urlSplit.length !== 5) return; // Not A base repo URL
-
+    if (urlSplit.length !== 5) { // Not A base repo URL
+        currentRepo = '';
+        return;
+    }
     const location = urlSplit.slice(-2).join('/')
     if (location !== currentRepo) {
         currentRepo = location;
