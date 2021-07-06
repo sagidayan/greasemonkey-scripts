@@ -3,7 +3,7 @@
 // @description    A brief description of your script
 // @namespace      http://arantius.com/misc/greasemonkey/
 // @author         Sagi Dayan
-// @match        https://github.com/*
+// @match          https://github.com/*
 // @version        1.0
 // ==/UserScript==
 
@@ -50,7 +50,7 @@ setInterval(() => {
 
 function createPrHTML(pr) {
     const div = document.createElement('div');
-    const prState = pr.commits.nodes[0].commit.statusCheckRollup.state;
+    const prState = pr.commits.nodes[0].commit.statusCheckRollup?.state || '';
     const prStateColor = prState === 'FAILURE' ? 'red' : (prState === 'SUCCESS' ? 'green' : 'yellow');
 
     div.className = "d-sm-flex Box mb-2 Box-body color-bg-secondary";
