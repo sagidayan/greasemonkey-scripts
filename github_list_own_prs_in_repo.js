@@ -23,7 +23,8 @@
                 "Content-Type": "application/json",
                 "Authorization": `token ${GITHUB_AUTH}`
             },
-            "body": "{\"query\":\"{\\n  user(login: \\\"" + GITHUB_USERNAME + "\\\") {\\n    pullRequests(first: 100, states: OPEN, baseRefName:\\\"master\\\") {\\n      totalCount\\n      nodes {\\n        createdAt\\n        number\\n        title\\n        mergeable\\n        url\\n        labels(first: 10){\\n          nodes{\\n            color\\n            description\\n            name\\n            \\n          }\\n        }\\n        commits(last:1) {\\n          nodes {\\n            commit {\\n              statusCheckRollup{\\n                state\\n              }\\n            }\\n          }\\n        }\\n        baseRefName\\n        headRefName\\n        repository{\\n          nameWithOwner\\n        }\\n      }\\n      pageInfo {\\n        hasNextPage\\n        endCursor\\n      }\\n    }\\n  }\\n}\"}"
+            // "body": "{\"query\":\"{\\n  user(login: \\\"" + GITHUB_USERNAME + "\\\") {\\n    pullRequests(first: 100, states: OPEN, baseRefName:\\\"master\\\") {\\n      totalCount\\n      nodes {\\n        createdAt\\n        number\\n        title\\n        mergeable\\n        url\\n        labels(first: 10){\\n          nodes{\\n            color\\n            description\\n            name\\n            \\n          }\\n        }\\n        commits(last:1) {\\n          nodes {\\n            commit {\\n              statusCheckRollup{\\n                state\\n              }\\n            }\\n          }\\n        }\\n        baseRefName\\n        headRefName\\n        repository{\\n          nameWithOwner\\n        }\\n      }\\n      pageInfo {\\n        hasNextPage\\n        endCursor\\n      }\\n    }\\n  }\\n}\"}"
+            "body": "{\"query\":\"{\\n  user(login: \\\"" + GITHUB_USERNAME + "\\\") {\\n    pullRequests(first: 100, states: OPEN ) {\\n      totalCount\\n      nodes {\\n        updatedAt\\n        createdAt\\n        number\\n        title\\n        mergeable\\n        url\\n        labels(first: 10){\\n          nodes{\\n            color\\n            description\\n            name\\n            \\n          }\\n        }\\n        commits(last:1) {\\n          nodes {\\n            commit {\\n              statusCheckRollup{\\n                state\\n                contexts(last:40){\\n                   nodes {\\n                  ... on StatusContext{\\n                    state\\n                    context\\n                    description\\n                  }\\n                  }\\n                }\\n              }\\n            }\\n          }\\n        }\\n        baseRefName\\n        headRefName\\n        repository{\\n          nameWithOwner\\n        }\\n      }\\n      pageInfo {\\n        hasNextPage\\n        endCursor\\n      }\\n    }\\n  }\\n}\"}"
         });
         const payload = await response.json();
         const prs = payload.data.user.pullRequests.nodes.filter(pr => {
@@ -61,6 +62,12 @@
         const div = document.createElement('div');
         const prState = pr.commits.nodes[0].commit.statusCheckRollup?.state || '';
         const prStateColor = prState === 'FAILURE' ? 'red' : (prState === 'SUCCESS' ? 'green' : 'yellow');
+        const checksSum = pr.commits.nodes[0].commit.statusCheckRollup?.contexts.nodes.reduce((acc, check) => {
+            acc.total++;
+            if(check.state === 'SUCCESS') acc.success++;
+            return acc;
+        }, {total:0, success:0});
+        const checksSumStr = checksSum ? `Checks Passed: ${checksSum.success} / ${checksSum.total}` : '';
         div.id = generatePrItemId(pr.number);
         div.onclick = () => {
             window.open(pr.url, '_blank');
@@ -92,6 +99,7 @@
     <div class="flex-auto"></div>
     ${lblInnerHtml}
     <div class="flex-auto"></div>
+    ${checksSumStr}
 </div>
 `;
         return div;
