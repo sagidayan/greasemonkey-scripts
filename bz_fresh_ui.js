@@ -83,11 +83,10 @@
 
     async function formatComments() {
         log('Started');
-        const comments = [...document.getElementsByClassName('bz_comment')];
-        comments.forEach(async comment => {
-            const header = comment.getElementsByClassName('bz_comment_head')[0] ||
-                comment.getElementsByClassName('bz_first_comment_head')[0];
-            if (!header) return;
+        const headers = [...document.getElementsByClassName('bz_comment_head'),
+                        ...document.getElementsByClassName('bz_first_comment_head')];
+        log(`Found ${headers.length} headers to add avatars to`);
+        headers.forEach(async header => {
             if ([...header.getElementsByClassName('sd_bz_user_avatar')].length) return;
             const children = [...header.children];
             const userDataElm = children
