@@ -84,7 +84,7 @@
     async function formatComments() {
         log('Started');
         const headers = [...document.getElementsByClassName('bz_comment_head'),
-                        ...document.getElementsByClassName('bz_first_comment_head')];
+        ...document.getElementsByClassName('bz_first_comment_head')];
         log(`Found ${headers.length} headers to add avatars to`);
         headers.forEach(async header => {
             if ([...header.getElementsByClassName('sd_bz_user_avatar')].length) return;
@@ -103,7 +103,26 @@
             img.src = userAvatar;
             wrapper.appendChild(img);
             header.insertBefore(wrapper, header.firstChild);
-        })
+        });
+        const historyChanges = [...document.getElementsByClassName('ih_history_change')];
+        log(`Found ${historyChanges.length} changes sections to format.`);
+        historyChanges.forEach(h => {
+            const lines = h.innerText.split('\n');
+            const newLines = [];
+            lines.forEach(l => {
+                const tab = newLines.length ? '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : '';
+                if (l.indexOf('→') != -1) {
+                    newLines.push(`${tab}🔀 ${l.replace('→', '🢧')}`);
+                }
+                else if (l.indexOf('CC') != -1) {
+                    newLines.push(`${tab}🙋 ${l}`);
+                }
+                else {
+                    newLines.push(`${tab}🔼 ${l}`);
+                }
+            });
+            h.innerHTML = newLines.join('<hr>')
+        });
     }
 
 
