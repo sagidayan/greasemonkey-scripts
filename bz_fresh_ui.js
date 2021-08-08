@@ -129,7 +129,7 @@
 
     async function getAvatarByEmail(email, fullName) {
         if (userAvatars[email]) return userAvatars[email];
-        if (!email) return getGravatar(email);
+        if (!email) return getGravatar('just-a-fake-email-for-default@avatar.image.thing');
         try {
             const resp = await fetch("https://api.github.com/graphql", {
                 "method": "POST",
